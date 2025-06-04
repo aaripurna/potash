@@ -1,0 +1,11 @@
+{
+  "scripts": {
+    "dev": "vite",
+    "build": "bunx vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {},
+  "devDependencies": {
+    "vite": "^6.3.5"
+  }
+}
