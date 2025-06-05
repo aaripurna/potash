@@ -9,7 +9,7 @@ export default defineConfig(({ mode }) => {
     },
     build: {
       cssCodeSplit: true,
-      outDir: "public",
+      outDir: "./public/vite/",
       manifest: true,
       rollupOptions: {
         input: [

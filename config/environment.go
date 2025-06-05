@@ -1,7 +1,6 @@
 package config
 
 import (
-	"embed"
 	"os"
 )
 
@@ -15,7 +14,6 @@ const (
 
 var AppEnv string
 var ViteServerPort string
-var PublicFS embed.FS
 var ManifestData []byte
 
 func InitEnv() {

@@ -7,7 +7,7 @@ import (
 	"log"
 	"strings"
 
-	"github.com/aaripurna/go-web-template/go-fullstack-template/config"
+	"github.com/aaripurna/go-fullstack-template/config"
 	"github.com/gofiber/template/html/v2"
 )
 
@@ -46,12 +46,12 @@ func AssetHtml(engine *html.Engine) {
 
 				if len(manifestItem.Css) > 0 {
 					for _, cssFile := range manifestItem.Css {
-						css = fmt.Sprintf(`%s<link rel="stylesheet" href="/%s">`, css, cssFile)
+						css = fmt.Sprintf(`%s<link rel="stylesheet" href="/vite/%s">`, css, cssFile)
 					}
 
 					result = template.HTML(fmt.Sprintf(`
 					%s
-					<script src="/%s"></script>
+					<script src="/vite/%s"></script>
 					`, css, manifestItem.File))
 
 				}
