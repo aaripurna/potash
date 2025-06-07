@@ -8,8 +8,8 @@ export default defineConfig(({ mode }) => {
       port: process.env.VITE_SERVER_PORT || 5173
     },
     build: {
+      outDir: "dist",
       cssCodeSplit: true,
-      outDir: "./public/vite/",
       manifest: true,
       rollupOptions: {
         input: [

@@ -46,12 +46,12 @@ func AssetHtml(engine *html.Engine) {
 
 				if len(manifestItem.Css) > 0 {
 					for _, cssFile := range manifestItem.Css {
-						css = fmt.Sprintf(`%s<link rel="stylesheet" href="/vite/%s">`, css, cssFile)
+						css = fmt.Sprintf(`%s<link rel="stylesheet" href="/%s">`, css, cssFile)
 					}
 
 					result = template.HTML(fmt.Sprintf(`
 					%s
-					<script src="/vite/%s"></script>
+					<script src="/%s"></script>
 					`, css, manifestItem.File))
 
 				}

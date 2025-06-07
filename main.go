@@ -4,7 +4,7 @@ Copyright © 2025 NAME HERE <EMAIL ADDRESS>
 package main
 
 import (
-	_ "embed"
+	"embed"
 
 	"os"
 
@@ -13,11 +13,8 @@ import (
 	"github.com/joho/godotenv"
 )
 
-//go:embed public/vite/.vite/manifest.json
-var manifestData []byte
-
-//go:embed public/vite/.vite/manifest.json
-var foo string
+//go:embed public/*
+var publicFS embed.FS
 
 func main() {
 	appEnv := os.Getenv("APP_ENV")
@@ -32,8 +29,11 @@ func main() {
 		godotenv.Load(".env.local", ".env")
 	}
 
-	config.ManifestData = manifestData
 	config.InitEnv()
+
+	if data, err := publicFS.ReadFile("public/.vite/manifest.json"); err == nil {
+		config.ManifestData = data
+	}
 
 	cmd.Execute()
 }

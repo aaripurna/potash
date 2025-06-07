@@ -8,8 +8,9 @@ import (
 	"log"
 
 	"github.com/aaripurna/go-fullstack-template/core"
-	"github.com/aaripurna/go-fullstack-template/web"
+	"github.com/aaripurna/go-fullstack-template/endpoints"
 	"github.com/gofiber/fiber/v2"
+	"github.com/gofiber/fiber/v2/middleware/logger"
 	"github.com/gofiber/template/html/v2"
 	"github.com/spf13/cobra"
 )
@@ -43,7 +44,11 @@ var serveCmd = &cobra.Command{
 			log.Fatal(err)
 		}
 
-		if err := Container.Invoke(pagesRoute); err != nil {
+		if err := Container.Invoke(middlewares); err != nil {
+			log.Fatal(err)
+		}
+
+		if err := Container.Invoke(endpoints.RouteWeb); err != nil {
 			log.Fatal(err)
 		}
 
@@ -63,6 +68,9 @@ func init() {
 	serveCmd.Flags().StringP("bind", "b", "127.0.0.1", "to set the IP binding")
 }
 
-func pagesRoute(app *fiber.App, pagesWeb *web.PagesWeb) {
-	app.Get("/", core.HandleReq(pagesWeb.Index))
+func middlewares(app *fiber.App) {
+	app.Use(logger.New(logger.Config{
+		Format:     "${time} ${ip} => ${status} - ${method} ${path} : ${latency} - ${error}\n",
+		TimeFormat: "2006/01/02 15:04:05",
+	}))
 }
