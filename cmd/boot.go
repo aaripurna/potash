@@ -1,7 +1,7 @@
 package cmd
 
 import (
-	"github.com/aaripurna/go-fullstack-template/web"
+	"github.com/aaripurna/potash/web"
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/template/html/v2"
 	"go.uber.org/dig"

@@ -8,8 +8,8 @@ import (
 
 	"os"
 
-	"github.com/aaripurna/go-fullstack-template/cmd"
-	"github.com/aaripurna/go-fullstack-template/config"
+	"github.com/aaripurna/potash/cmd"
+	"github.com/aaripurna/potash/config"
 	"github.com/joho/godotenv"
 )
 

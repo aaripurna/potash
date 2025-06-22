@@ -1,8 +1,8 @@
 package endpoints
 
 import (
-	"github.com/aaripurna/go-fullstack-template/core"
-	"github.com/aaripurna/go-fullstack-template/web"
+	"github.com/aaripurna/potash/core"
+	"github.com/aaripurna/potash/web"
 	"github.com/gofiber/fiber/v2"
 )
 

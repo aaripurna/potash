@@ -7,8 +7,8 @@ import (
 	"fmt"
 	"log"
 
-	"github.com/aaripurna/go-fullstack-template/core"
-	"github.com/aaripurna/go-fullstack-template/endpoints"
+	"github.com/aaripurna/potash/core"
+	"github.com/aaripurna/potash/endpoints"
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/logger"
 	"github.com/gofiber/template/html/v2"

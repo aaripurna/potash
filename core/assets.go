@@ -7,7 +7,7 @@ import (
 	"log"
 	"strings"
 
-	"github.com/aaripurna/go-fullstack-template/config"
+	"github.com/aaripurna/potash/config"
 	"github.com/gofiber/template/html/v2"
 )
 
@@ -60,6 +60,12 @@ func AssetHtml(engine *html.Engine) {
 			return result
 		},
 	)
+
+	engine.AddFunc(
+		"asset_path", func(name string) string {
+			return assetsFinder(name)
+		},
+	)
 }
 
 func parseManifestData() map[string]manifestItem {
@@ -91,7 +97,7 @@ func assetsFinder(name string) string {
 		manifestData := parseManifestData()
 
 		if item, ok := manifestData[strings.TrimSpace(name)]; ok {
-			return item.File
+			return fmt.Sprintf("/%s", item.File)
 		} else {
 			panic(fmt.Sprintf("Unable to find %s in your assets list", name))
 		}

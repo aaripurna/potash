@@ -1,4 +1,4 @@
-module github.com/aaripurna/go-fullstack-template
+module github.com/aaripurna/potash
 
 go 1.24.3
 

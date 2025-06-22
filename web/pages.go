@@ -1,6 +1,6 @@
 package web
 
-import "github.com/aaripurna/go-fullstack-template/core"
+import "github.com/aaripurna/potash/core"
 
 type PagesWeb struct{}
 

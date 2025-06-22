@@ -8,15 +8,16 @@ COPY assets /app/assets
 RUN bun install
 RUN bunx vite build
 
-FROM golang:1.24.3-alpine as go-builder
+FROM golang:1.24.4-alpine as go-builder
 WORKDIR /app
 COPY . .
 RUN go mod download
 COPY --from=js-builder /app/dist /app/public
-RUN CGO_ENABLED=0 GOOS=linux go build -o application
+RUN CGO_ENABLED=0 GOOS=linux go build -ldflags "-s -w" -o application
 
 # Runtime
-FROM scratch
+FROM alpine:latest
+RUN apk --no-cache add ca-certificates tzdata
 WORKDIR /app
 COPY --from=go-builder /app/application /app
 COPY --from=js-builder /app/dist /app/public
