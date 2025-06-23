@@ -4,8 +4,15 @@
     "build": "bunx vite build",
     "preview": "vite preview"
   },
-  "dependencies": {},
+  "dependencies": {
+    "@tailwindcss/postcss": "^4.1.10",
+    "basecoat-css": "^0.2.5",
+    "tailwindcss": "^4.1.10"
+  },
   "devDependencies": {
+    "@fullhuman/postcss-purgecss": "^7.0.2",
+    "cssnano": "^7.0.7",
+    "postcss": "^8.5.6",
     "vite": "^6.3.5"
   }
 }

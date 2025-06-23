@@ -1,12 +1,8 @@
 FROM oven/bun:latest as js-builder
 WORKDIR /app
-COPY package.json /app
-COPY bun.lock /app
-COPY vite.config.js /app
-COPY public /app/public
-COPY assets /app/assets
+COPY . .
 RUN bun install
-RUN bunx vite build
+RUN NODE_ENV=production bunx vite build
 
 FROM golang:1.24.4-alpine as go-builder
 WORKDIR /app

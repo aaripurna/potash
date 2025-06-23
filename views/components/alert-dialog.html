@@ -1,0 +1,18 @@
+{{ define "alert-dialog" }}
+<button type="button" onclick="document.getElementById('{{ .ID }}').showModal()" class="btn-outline">{{ .ButtonText
+  }}</button>
+
+<dialog id="{{ .ID }}" class="dialog" aria-labelledby="alert-dialog-title" aria-describedby="alert-dialog-description">
+  <article>
+    <header>
+      <h2 id="alert-dialog-title">{{ .Title }}</h2>
+      <p id="alert-dialog-description">{{ .Description }}</p>
+    </header>
+
+    <footer>
+      <button class="btn-outline" onclick="document.getElementById('{{ .ID }}').close()">Cancel</button>
+      <button class="btn-primary" onclick="document.getElementById('{{ .ID }}').close()">Continue</button>
+    </footer>
+  </article>
+</dialog>
+{{ end }}
