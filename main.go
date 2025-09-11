@@ -25,8 +25,10 @@ func main() {
 
 	if appEnv == "test" {
 		godotenv.Load(".env.test")
+	} else if appEnv == "production" {
+		godotenv.Load(".env")
 	} else {
-		godotenv.Load(".env.local", ".env")
+		godotenv.Load(".env.local")
 	}
 
 	config.InitEnv()

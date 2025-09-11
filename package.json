@@ -6,8 +6,7 @@
   },
   "dependencies": {
     "@tailwindcss/postcss": "^4.1.10",
-    "basecoat-css": "^0.2.5",
-    "tailwindcss": "^4.1.10"
+    "basecoat-css": "^0.2.5"
   },
   "devDependencies": {
     "@fullhuman/postcss-purgecss": "^7.0.2",

@@ -21,7 +21,7 @@ type manifestItem struct {
 func AssetHtml(engine *html.Engine) {
 	engine.AddFunc(
 		"development_dependencies", func() template.HTML {
-			if config.AppEnv != string(config.AppEnvProduction) {
+			if config.NodeEnv != string(config.AppEnvProduction) {
 				return template.HTML(fmt.Sprintf(`
 					<script type="module" src="http://localhost:%s/@vite/client"></script>
 				`, config.ViteServerPort))
@@ -35,7 +35,7 @@ func AssetHtml(engine *html.Engine) {
 		"vite_asset", func(name string) template.HTML {
 			var result template.HTML
 
-			if config.AppEnv != string(config.AppEnvProduction) {
+			if config.NodeEnv != string(config.AppEnvProduction) {
 				result = template.HTML(fmt.Sprintf(`
 					<script type="module" src="http://localhost:%s/%s"></script>
 				`, config.ViteServerPort, strings.TrimSpace(name)))

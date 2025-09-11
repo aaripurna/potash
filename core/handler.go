@@ -9,14 +9,14 @@ import (
 type HandlerFunc func(*AppContext) error
 
 type HtmlResponse struct {
-	Layout     string
+	Layouts    []string
 	Template   string
 	Assigns    fiber.Map
 	StatusCode int
 }
 
 func (h HtmlResponse) Error() string {
-	return fmt.Sprintf("Layout = %s, Template = %s, Assign = %v, StatusCode = %d", h.Layout, h.Template, h.Assigns, h.StatusCode)
+	return fmt.Sprintf("Layout = %s, Template = %v, Assign = %v, StatusCode = %d", h.Layouts, h.Template, h.Assigns, h.StatusCode)
 }
 
 func HandleReq(handlerFn HandlerFunc) func(*fiber.Ctx) error {
@@ -34,7 +34,7 @@ func HandleReq(handlerFn HandlerFunc) func(*fiber.Ctx) error {
 
 			ctx.Status(statusCode)
 
-			return ctx.Render(h.Template, h.Assigns, h.Layout)
+			return ctx.Render(h.Template, h.Assigns, h.Layouts...)
 		}
 
 		return result

@@ -15,7 +15,7 @@ func NewPagesWeb() *PagesWeb {
 
 func (p *PagesWeb) Index(ctx *core.AppContext) error {
 	return core.HtmlResponse{
-		Layout:   "layouts/app",
+		Layouts:  []string{"layouts/app"},
 		Template: "pages/index",
 		Assigns: fiber.Map{
 			"Alert": dto.AlertDialog{

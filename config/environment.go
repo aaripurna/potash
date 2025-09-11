@@ -16,9 +16,12 @@ var AppEnv string
 var ViteServerPort string
 var ManifestData []byte
 
+var NodeEnv string
+
 func InitEnv() {
 	AppEnv = getEnv("APP_ENV", "local")
 	ViteServerPort = getEnv("VITE_SERVER_PORT", "5173")
+	NodeEnv = getEnv("NODE_ENV", "local")
 }
 
 func getEnv(key string, fallback string) string {
