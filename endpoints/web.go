@@ -7,5 +7,5 @@ import (
 )
 
 func RouteWeb(app *fiber.App, pagesWeb *web.PagesWeb) {
-	app.Get("/", core.HandleReq(pagesWeb.Index))
+	app.All("/*", core.HandleReq(pagesWeb.Index))
 }

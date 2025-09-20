@@ -48,12 +48,17 @@ var serveCmd = &cobra.Command{
 			log.Fatal(err)
 		}
 
+		if err := Container.Invoke(func(app *fiber.App) {
+			app.Static("/", "./public")
+		}); err != nil {
+			log.Fatal(err)
+		}
+
 		if err := Container.Invoke(endpoints.RouteWeb); err != nil {
 			log.Fatal(err)
 		}
 
 		if err := Container.Invoke(func(app *fiber.App) {
-			app.Static("/", "./public")
 
 			log.Fatal(app.Listen(fmt.Sprintf("%s:%v", bind, port)))
 		}); err != nil {
