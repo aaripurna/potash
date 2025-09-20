@@ -1,9 +1,9 @@
-FROM oven/bun:latest as js-install
+FROM oven/bun:1 as js-install
 RUN mkdir -p /temp/prod
 COPY package.json bun.lock /temp/prod/
-RUN cd /temp/prod && NODE_ENV=production bun install --frozen-lockfile --production
+RUN cd /temp/prod && NODE_ENV=production bun install
 
-FROM oven/bun:latest as js-builder
+FROM oven/bun:1 as js-builder
 WORKDIR /app
 COPY . .
 COPY --from=js-install /temp/prod/node_modules node_modules
