@@ -1,10 +1,9 @@
+import "vite/modulepreload-polyfill";
 
-import 'vite/modulepreload-polyfill'
+import "./css/app.css";
 
-import "./css/app.css"
-
-import 'basecoat-css/all';
+import "basecoat-css/all";
 
 document.addEventListener("DOMContentLoaded", () => {
-  console.log("Load Morning night")
-})
+  console.log("Load Morning night");
+});

@@ -4,7 +4,7 @@ COPY . .
 RUN bun install
 RUN NODE_ENV=production bunx vite build
 
-FROM golang:1.25.1-alpine as go-builder
+FROM golang:1.25.6-alpine as go-builder
 WORKDIR /app
 COPY . .
 RUN go mod download
@@ -21,4 +21,3 @@ COPY views /app/views
 EXPOSE 80
 
 ENTRYPOINT [ "/app/application" ]
-

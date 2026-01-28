@@ -1,5 +1,5 @@
 /*
-Copyright © 2025 NAME HERE <EMAIL ADDRESS>
+Copyright © 2025 Nawa Aripurna <nawa@aaripurna.com>
 */
 package main
 
@@ -19,15 +19,12 @@ var publicFS embed.FS
 func main() {
 	appEnv := os.Getenv("APP_ENV")
 
-	if appEnv == "" {
-		appEnv = string(config.AppEnvLocal)
-	}
-
-	if appEnv == "test" {
+	switch appEnv {
+	case "test":
 		godotenv.Load(".env.test")
-	} else if appEnv == "production" {
+	case "production":
 		godotenv.Load(".env")
-	} else {
+	default:
 		godotenv.Load(".env.local")
 	}
 
