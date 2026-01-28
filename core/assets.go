@@ -91,7 +91,7 @@ func manifestEntry(name string) manifestItem {
 }
 
 func assetsFinder(name string) string {
-	if config.AppEnv != string(config.AppEnvProduction) {
+	if config.NodeEnv != string(config.AppEnvProduction) {
 		return fmt.Sprintf("http://localhost:%s/%s", config.ViteServerPort, strings.TrimSpace(name))
 	} else {
 		manifestData := parseManifestData()
