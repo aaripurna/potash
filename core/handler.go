@@ -11,7 +11,7 @@ type HandlerFunc func(*AppContext) error
 type HtmlResponse struct {
 	Layouts    []string
 	Template   string
-	Assigns    fiber.Map
+	Assigns    any
 	StatusCode int
 }
 
