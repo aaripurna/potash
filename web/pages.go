@@ -3,7 +3,7 @@ package web
 import (
 	"github.com/aaripurna/potash/core"
 	"github.com/aaripurna/potash/dto"
-	"github.com/gofiber/fiber/v2"
+	"github.com/gofiber/fiber/v3"
 	"github.com/google/uuid"
 )
 

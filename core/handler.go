@@ -3,7 +3,7 @@ package core
 import (
 	"fmt"
 
-	"github.com/gofiber/fiber/v2"
+	"github.com/gofiber/fiber/v3"
 )
 
 type HandlerFunc func(*AppContext) error
@@ -19,8 +19,8 @@ func (h HtmlResponse) Error() string {
 	return fmt.Sprintf("Layout = %s, Template = %v, Assign = %v, StatusCode = %d", h.Layouts, h.Template, h.Assigns, h.StatusCode)
 }
 
-func HandleReq(handlerFn HandlerFunc) func(*fiber.Ctx) error {
-	return func(ctx *fiber.Ctx) error {
+func HandleReq(handlerFn HandlerFunc) func(fiber.Ctx) error {
+	return func(ctx fiber.Ctx) error {
 		appCtx := &AppContext{Ctx: ctx}
 
 		result := handlerFn(appCtx)

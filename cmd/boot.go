@@ -2,8 +2,8 @@ package cmd
 
 import (
 	"github.com/aaripurna/potash/web"
-	"github.com/gofiber/fiber/v2"
-	"github.com/gofiber/template/html/v2"
+	"github.com/gofiber/fiber/v3"
+	"github.com/gofiber/template/html/v3"
 	"go.uber.org/dig"
 )
 
@@ -17,9 +17,7 @@ func init() {
 	})
 
 	Container.Provide(func(engine *html.Engine) *fiber.App {
-		return fiber.New(fiber.Config{
-			Views: engine,
-		})
+		return fiber.New(fiber.Config{Views: engine})
 	})
 
 	// WEB

@@ -8,7 +8,7 @@ import (
 	"strings"
 
 	"github.com/aaripurna/potash/config"
-	"github.com/gofiber/template/html/v2"
+	"github.com/gofiber/template/html/v3"
 )
 
 type manifestItem struct {
