@@ -1,6 +1,8 @@
 @import "tailwindcss";
 @import "basecoat-css";
 
+@source "../../views";
+
 body {
   background-color: pink;
 }
