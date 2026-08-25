@@ -6,17 +6,24 @@ import (
 	"html/template"
 	"log"
 	"strings"
+	"sync"
 
 	"github.com/aaripurna/potash/config"
 	"github.com/gofiber/template/html/v3"
 )
 
 type manifestItem struct {
-	File string   `json:"file"`
-	Name string   `json:"name"`
-	Src  string   `json:"src"`
-	Css  []string `json:"css"`
+	File    string   `json:"file"`
+	Name    string   `json:"name"`
+	Src     string   `json:"src"`
+	Css     []string `json:"css"`
+	Imports []string `json:"imports"`
 }
+
+var (
+	manifestOnce  sync.Once
+	manifestCache map[string]manifestItem
+)
 
 func AssetHtml(engine *html.Engine) {
 	engine.AddFunc(
@@ -33,31 +40,30 @@ func AssetHtml(engine *html.Engine) {
 
 	engine.AddFunc(
 		"vite_asset", func(name string) template.HTML {
-			var result template.HTML
-
 			if config.NodeEnv != string(config.AppEnvProduction) {
-				result = template.HTML(fmt.Sprintf(`
+				return template.HTML(fmt.Sprintf(`
 					<script type="module" src="http://localhost:%s/%s"></script>
 				`, config.ViteServerPort, strings.TrimSpace(name)))
-			} else {
-				manifestItem := manifestEntry(name)
-
-				css := ""
-
-				if len(manifestItem.Css) > 0 {
-					for _, cssFile := range manifestItem.Css {
-						css = fmt.Sprintf(`%s<link rel="stylesheet" href="/%s">`, css, cssFile)
-					}
-
-					result = template.HTML(fmt.Sprintf(`
-					%s
-					<script src="/%s"></script>
-					`, css, manifestItem.File))
-
-				}
 			}
 
-			return result
+			entry := manifestEntry(name)
+			cssFiles, preloads := entryDependencies(entry)
+
+			var out strings.Builder
+
+			for _, cssFile := range cssFiles {
+				fmt.Fprintf(&out, `<link rel="stylesheet" href="/%s">`, cssFile)
+			}
+
+			// type="module" is required: any entry that gets code split emits
+			// `import "./chunk.js"`, which is a syntax error in a classic script.
+			fmt.Fprintf(&out, `<script type="module" crossorigin src="/%s"></script>`, entry.File)
+
+			for _, preload := range preloads {
+				fmt.Fprintf(&out, `<link rel="modulepreload" crossorigin href="/%s">`, preload)
+			}
+
+			return template.HTML(out.String())
 		},
 	)
 
@@ -68,17 +74,50 @@ func AssetHtml(engine *html.Engine) {
 	)
 }
 
-func parseManifestData() map[string]manifestItem {
-	var result map[string]manifestItem
+// entryDependencies walks an entry and its static imports, collecting the
+// stylesheets to link and the shared chunks to preload. Without the preloads
+// the browser only discovers a shared chunk after parsing the entry, costing a
+// round trip.
+func entryDependencies(entry manifestItem) (css []string, preloads []string) {
+	manifestData := parseManifestData()
+	seen := map[string]bool{}
 
-	err := json.Unmarshal(config.ManifestData, &result)
+	var walk func(item manifestItem)
+	walk = func(item manifestItem) {
+		for _, cssFile := range item.Css {
+			if !seen["css:"+cssFile] {
+				seen["css:"+cssFile] = true
+				css = append(css, cssFile)
+			}
+		}
 
-	if err != nil {
-		log.Fatal("Unable to read the manifest.json\nPlease ensure you run `bunx vite build`")
-		panic(err)
+		for _, key := range item.Imports {
+			dep, ok := manifestData[key]
+
+			if !ok || seen["js:"+key] {
+				continue
+			}
+
+			seen["js:"+key] = true
+			preloads = append(preloads, dep.File)
+			walk(dep)
+		}
 	}
 
-	return result
+	walk(entry)
+
+	return css, preloads
+}
+
+func parseManifestData() map[string]manifestItem {
+	manifestOnce.Do(func() {
+		if err := json.Unmarshal(config.ManifestData, &manifestCache); err != nil {
+			log.Fatal("Unable to read the manifest.json\nPlease ensure you run `bunx vite build`")
+			panic(err)
+		}
+	})
+
+	return manifestCache
 }
 
 func manifestEntry(name string) manifestItem {
