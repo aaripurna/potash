@@ -15,6 +15,7 @@ import (
 	"github.com/gofiber/fiber/v3/middleware/logger"
 	"github.com/gofiber/template/html/v3"
 	"github.com/spf13/cobra"
+	"gorm.io/gorm"
 )
 
 // serveCmd represents the serve command
@@ -43,6 +44,13 @@ var serveCmd = &cobra.Command{
 		if err := Container.Invoke(func(engine *html.Engine) {
 			core.AssetHtml(engine)
 		}); err != nil {
+			log.Fatal(err)
+		}
+
+		// dig builds providers lazily, so ask for the database up front: a bad
+		// DSN should stop the boot, not surface on the first query. database.New
+		// pings, so a successful Invoke means the pool is live.
+		if err := Container.Invoke(func(*gorm.DB) {}); err != nil {
 			log.Fatal(err)
 		}
 
