@@ -7,3 +7,6 @@ build:
 	@docker container cp gft-builder:/app ./_build
 	@docker container rm gft-builder
 	@docker rmi gft:builder
+
+dev:
+	@foreman s -f Procfile
