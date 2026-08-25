@@ -1,4 +1,4 @@
-.PHONY: all build dev
+.PHONY: all build dev migrate migrate-up migrate-down migrate-status migration
 
 # Prefer docker, fall back to podman. Override with: make build CONTAINER=podman
 CONTAINER ?= $(shell for c in docker podman; do command -v $$c >/dev/null 2>&1 && { echo $$c; break; }; done)
@@ -15,3 +15,19 @@ build:
 
 dev:
 	@foreman s -f Procfile
+
+# Migrations run against DATABASE_URL, defaulting to potash_dev.
+migrate: migrate-up
+
+migrate-up:
+	@go run . migrate up
+
+migrate-down:
+	@go run . migrate down
+
+migrate-status:
+	@go run . migrate status
+
+migration:
+	@test -n "$(name)" || { echo "usage: make migration name=create_widgets"; exit 1; }
+	@go run . migrate create $(name)
