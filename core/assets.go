@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"html/template"
-	"log"
 	"strings"
 	"sync"
 
@@ -23,6 +22,7 @@ type manifestItem struct {
 var (
 	manifestOnce  sync.Once
 	manifestCache map[string]manifestItem
+	manifestErr   error
 )
 
 func AssetHtml(engine *html.Engine) {
@@ -39,15 +39,24 @@ func AssetHtml(engine *html.Engine) {
 	)
 
 	engine.AddFunc(
-		"vite_asset", func(name string) template.HTML {
+		"vite_asset", func(name string) (template.HTML, error) {
 			if config.NodeEnv != string(config.AppEnvProduction) {
 				return template.HTML(fmt.Sprintf(`
 					<script type="module" src="http://localhost:%s/%s"></script>
-				`, config.ViteServerPort, strings.TrimSpace(name)))
+				`, config.ViteServerPort, strings.TrimSpace(name))), nil
 			}
 
-			entry := manifestEntry(name)
-			cssFiles, preloads := entryDependencies(entry)
+			entry, err := manifestEntry(name)
+
+			if err != nil {
+				return "", err
+			}
+
+			cssFiles, preloads, err := entryDependencies(entry)
+
+			if err != nil {
+				return "", err
+			}
 
 			var out strings.Builder
 
@@ -63,13 +72,27 @@ func AssetHtml(engine *html.Engine) {
 				fmt.Fprintf(&out, `<link rel="modulepreload" crossorigin href="/%s">`, preload)
 			}
 
-			return template.HTML(out.String())
+			return template.HTML(out.String()), nil
 		},
 	)
 
 	engine.AddFunc(
-		"asset_path", func(name string) string {
+		"asset_path", func(name string) (string, error) {
 			return assetsFinder(name)
+		},
+	)
+
+	// props serializes a value for an island's data-props attribute. It returns
+	// a plain string so html/template applies its own attribute escaping.
+	engine.AddFunc(
+		"props", func(value any) (string, error) {
+			encoded, err := json.Marshal(value)
+
+			if err != nil {
+				return "", fmt.Errorf("unable to encode island props: %w", err)
+			}
+
+			return string(encoded), nil
 		},
 	)
 }
@@ -78,8 +101,13 @@ func AssetHtml(engine *html.Engine) {
 // stylesheets to link and the shared chunks to preload. Without the preloads
 // the browser only discovers a shared chunk after parsing the entry, costing a
 // round trip.
-func entryDependencies(entry manifestItem) (css []string, preloads []string) {
-	manifestData := parseManifestData()
+func entryDependencies(entry manifestItem) (css []string, preloads []string, err error) {
+	manifestData, err := parseManifestData()
+
+	if err != nil {
+		return nil, nil, err
+	}
+
 	seen := map[string]bool{}
 
 	var walk func(item manifestItem)
@@ -106,39 +134,48 @@ func entryDependencies(entry manifestItem) (css []string, preloads []string) {
 
 	walk(entry)
 
-	return css, preloads
+	return css, preloads, nil
 }
 
-func parseManifestData() map[string]manifestItem {
+// parseManifestData returns an error rather than exiting: a missing or broken
+// manifest should fail the request being rendered, not take the whole server
+// down with it.
+func parseManifestData() (map[string]manifestItem, error) {
 	manifestOnce.Do(func() {
 		if err := json.Unmarshal(config.ManifestData, &manifestCache); err != nil {
-			log.Fatal("Unable to read the manifest.json\nPlease ensure you run `bunx vite build`")
-			panic(err)
+			manifestErr = fmt.Errorf("unable to read manifest.json, please run `bunx vite build`: %w", err)
 		}
 	})
 
-	return manifestCache
+	return manifestCache, manifestErr
 }
 
-func manifestEntry(name string) manifestItem {
-	manifestData := parseManifestData()
-	if item, ok := manifestData[strings.TrimSpace(name)]; ok {
-		return item
-	} else {
-		panic(fmt.Sprintf("Unable to find %s in your assets list", name))
+func manifestEntry(name string) (manifestItem, error) {
+	manifestData, err := parseManifestData()
+
+	if err != nil {
+		return manifestItem{}, err
 	}
+
+	item, ok := manifestData[strings.TrimSpace(name)]
+
+	if !ok {
+		return manifestItem{}, fmt.Errorf("unable to find %s in your assets list", strings.TrimSpace(name))
+	}
+
+	return item, nil
 }
 
-func assetsFinder(name string) string {
+func assetsFinder(name string) (string, error) {
 	if config.NodeEnv != string(config.AppEnvProduction) {
-		return fmt.Sprintf("http://localhost:%s/%s", config.ViteServerPort, strings.TrimSpace(name))
-	} else {
-		manifestData := parseManifestData()
-
-		if item, ok := manifestData[strings.TrimSpace(name)]; ok {
-			return fmt.Sprintf("/%s", item.File)
-		} else {
-			panic(fmt.Sprintf("Unable to find %s in your assets list", name))
-		}
+		return fmt.Sprintf("http://localhost:%s/%s", config.ViteServerPort, strings.TrimSpace(name)), nil
 	}
+
+	item, err := manifestEntry(name)
+
+	if err != nil {
+		return "", err
+	}
+
+	return fmt.Sprintf("/%s", item.File), nil
 }

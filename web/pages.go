@@ -18,6 +18,13 @@ func (p *PagesWeb) Index(ctx *core.AppContext) error {
 		Layouts:  []string{"layouts/app"},
 		Template: "pages/index",
 		Assigns: fiber.Map{
+			"Signup": fiber.Map{
+				"heading": "Create your account",
+				"plans": []fiber.Map{
+					{"id": "free", "name": "Free"},
+					{"id": "pro", "name": "Pro"},
+				},
+			},
 			"Alert": dto.AlertDialog{
 				ButtonText:  "Confirm Changes",
 				ID:          uuid.NewString(),
