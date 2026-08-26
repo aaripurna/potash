@@ -7,3 +7,4 @@ _build
 .DS_Store
 playwright-report/
 test-results/
+potash

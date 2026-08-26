@@ -2,6 +2,7 @@ package cmd
 
 import (
 	"log"
+	"net/http"
 
 	"github.com/aaripurna/potash/config"
 	"github.com/aaripurna/potash/database"
@@ -17,7 +18,7 @@ func init() {
 	Container = dig.New()
 
 	must(Container.Provide(func() *html.Engine {
-		return html.New("./views", ".html")
+		return html.NewFileSystem(http.FS(config.ViewsFS), ".html")
 	}))
 
 	must(Container.Provide(func(engine *html.Engine) *fiber.App {

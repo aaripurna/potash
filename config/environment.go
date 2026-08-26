@@ -1,6 +1,7 @@
 package config
 
 import (
+	"io/fs"
 	"os"
 	"strconv"
 	"time"
@@ -17,6 +18,10 @@ const (
 var AppEnv string
 var ViteServerPort string
 var ManifestData []byte
+
+// Serving from these rather than from disk keeps the binary self contained.
+var PublicFS fs.FS
+var ViewsFS fs.FS
 
 var NodeEnv string
 

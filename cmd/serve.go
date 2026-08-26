@@ -9,6 +9,7 @@ import (
 
 	"github.com/gofiber/fiber/v3/middleware/static"
 
+	"github.com/aaripurna/potash/config"
 	"github.com/aaripurna/potash/core"
 	"github.com/aaripurna/potash/endpoints"
 	"github.com/gofiber/fiber/v3"
@@ -55,7 +56,7 @@ var serveCmd = &cobra.Command{
 		}
 
 		if err := Container.Invoke(func(app *fiber.App) {
-			app.Get("/*", static.New("./public"))
+			app.Get("/*", static.New("", static.Config{FS: config.PublicFS}))
 
 			log.Fatal(app.Listen(fmt.Sprintf("%s:%v", bind, port)))
 		}); err != nil {
