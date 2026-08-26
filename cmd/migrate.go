@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"log"
 
-	"github.com/aaripurna/potash/config"
 	"github.com/aaripurna/potash/database"
 	"github.com/aaripurna/potash/migrations"
 	"github.com/pressly/goose/v3"
@@ -63,25 +62,21 @@ var migrateCreateCmd = &cobra.Command{
 
 // withGoose opens a connection, hands it to fn, and always closes the pool.
 func withGoose(fn func(db *gorm.DB) error) {
-	config.InitEnv()
+	Container.Invoke(func(db *database.DB) error {
+		sqlDB, err := db.Primary.DB()
 
-	db, err := database.Open(config.DatabaseURL)
+		if err != nil {
+			log.Fatalf("unable to reach the connection pool: %v", err)
+		}
 
-	if err != nil {
-		log.Fatalf("%v", err)
-	}
+		defer sqlDB.Close()
 
-	sqlDB, err := db.DB()
+		if err := fn(db.Primary); err != nil {
+			log.Fatalf("%v", err)
+		}
 
-	if err != nil {
-		log.Fatalf("unable to reach the connection pool: %v", err)
-	}
-
-	defer sqlDB.Close()
-
-	if err := fn(db); err != nil {
-		log.Fatalf("%v", err)
-	}
+		return nil
+	})
 }
 
 func runGoose(db *gorm.DB, action func(*sql.DB, string, ...goose.OptionsFunc) error) error {

@@ -11,6 +11,22 @@ import (
 	"gorm.io/gorm/logger"
 )
 
+type DB struct {
+	Primary *gorm.DB
+}
+
+func NewDB(primaryDNS string) (*DB, error) {
+	primaryDB, err := Open(primaryDNS)
+
+	if err != nil {
+		return nil, err
+	}
+
+	return &DB{
+		Primary: primaryDB,
+	}, nil
+}
+
 // Open connects to dsn and verifies it with a ping, so a bad DSN fails at boot
 // rather than on the first request that needs the database. It takes the dsn
 // rather than reading config directly so a second database is just a second
