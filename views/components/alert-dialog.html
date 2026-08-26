@@ -1,5 +1,5 @@
 {{ define "alert-dialog" }}
-<button type="button" onclick="document.getElementById('{{ .ID }}').showModal()" class="btn-outline">{{ .ButtonText
+<button type="button" onclick="document.getElementById('{{ .ID }}').showModal()" class="btn" data-variant="outline">{{ .ButtonText
   }}</button>
 
 <dialog id="{{ .ID }}" class="dialog" aria-labelledby="alert-dialog-title" aria-describedby="alert-dialog-description">
@@ -10,8 +10,8 @@
     </header>
 
     <footer>
-      <button class="btn-outline" onclick="document.getElementById('{{ .ID }}').close()">Cancel</button>
-      <button class="btn-primary" onclick="document.getElementById('{{ .ID }}').close()">Continue</button>
+      <button class="btn" data-variant="outline" onclick="document.getElementById('{{ .ID }}').close()">Cancel</button>
+      <button class="btn" data-variant="primary" onclick="document.getElementById('{{ .ID }}').close()">Continue</button>
     </footer>
   </article>
 </dialog>

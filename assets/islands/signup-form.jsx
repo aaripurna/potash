@@ -10,7 +10,7 @@ export default function SignupForm({ heading = "Sign up", plans = [] }) {
     email.length > 0 && !email.includes("@") ? "Enter a valid email address." : null;
 
   return (
-    <form class="form grid gap-4" onSubmit={(e) => e.preventDefault()}>
+    <form class="grid gap-4" onSubmit={(e) => e.preventDefault()}>
       <h2 class="text-xl font-semibold">{heading}</h2>
 
       <div class="grid gap-2">
