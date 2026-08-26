@@ -22,6 +22,12 @@ export default defineConfig(({ mode }) => {
       jsx: "automatic",
       jsxImportSource: "preact",
     },
+    // Islands load via dynamic import, so vite cannot crawl to preact from the
+    // entry at startup. Without this it discovers these mid-session, re-optimizes
+    // and force-reloads the page - which shows up as random failures under test.
+    optimizeDeps: {
+      include: ["preact", "preact/hooks", "preact/jsx-runtime", "preact/jsx-dev-runtime"],
+    },
     server: {
       port: process.env.VITE_SERVER_PORT || 5173,
     },

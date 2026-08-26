@@ -1,4 +1,4 @@
-.PHONY: all build dev migrate migrate-up migrate-down migrate-status migration
+.PHONY: all build dev test test-e2e migrate migrate-up migrate-down migrate-status migration
 
 # Prefer docker, fall back to podman. Override with: make build CONTAINER=podman
 CONTAINER ?= $(shell for c in docker podman; do command -v $$c >/dev/null 2>&1 && { echo $$c; break; }; done)
@@ -15,6 +15,12 @@ build:
 
 dev:
 	@foreman s -f Procfile
+
+test:
+	@go test ./... -race
+
+test-e2e:
+	@bunx playwright test
 
 # Migrations run against DATABASE_URL, defaulting to potash_dev.
 migrate: migrate-up

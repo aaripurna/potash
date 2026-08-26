@@ -5,3 +5,5 @@ tmp/
 dist/
 _build
 .DS_Store
+playwright-report/
+test-results/
